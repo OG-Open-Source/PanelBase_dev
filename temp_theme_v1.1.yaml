@@ -1,0 +1,42 @@
+name: panel
+authors:
+  - name: PanelBase Team
+    email: no-reply@ogtt.tk # Optional
+    url: https://panelbase.ogtt.tk # Optional
+  - name: OGATA Open Source
+    url: https://raw.ogtt.tk # Optional
+version: 1.0.0
+description: (Description? The author was too cool for that.)
+source_link: http://www.ogtt.tk/theme.yaml
+structure:
+  docker.html:
+    url: http://www.ogtt.tk/docker.html
+    sum: #SHA256
+  filemanager.html:
+    url: http://www.ogtt.tk/filemanager.html
+    sum: #SHA256
+  index.html:
+    url: http://www.ogtt.tk/index.html
+    sum: #SHA256
+  js:
+    nav.js:
+      url: http://www.ogtt.tk/js/nav.js
+      sum: #SHA256
+    script.js:
+      url: http://www.ogtt.tk/js/script.js
+      sum: #SHA256
+  login.html:
+    url: http://www.ogtt.tk/login.html
+    sum: #SHA256
+  market.html:
+    url: http://www.ogtt.tk/market.html
+    sum: #SHA256
+  settings.html:
+    url: http://www.ogtt.tk/settings.html
+    sum: #SHA256
+  style.css:
+    url: http://www.ogtt.tk/style.css
+    sum: #SHA256
+  website.html:
+    url: http://www.ogtt.tk/website.html
+    sum: #SHA256

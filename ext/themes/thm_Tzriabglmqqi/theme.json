@@ -1,0 +1,28 @@
+{
+  "name": "This is a long theme name",
+  "authors": [
+    "Github",
+    "and",
+    "google",
+    "oh yeakksakd adasd"
+  ],
+  "version": "2025.05.12",
+  "description": "The VSCodium project exists so that you don’t have to download+build from source. This project includes special build scripts that clone Microsoft’s vscode repo, run the build commands, and upload the resulting binaries for you to GitHub releases. These binaries are licensed under the MIT license. Telemetry is disabled.",
+  "source_link": "http://www.ogtt.tk",
+  "structure": {
+    "docker.html": "docker.html",
+    "filemanager.html": "filemanager.html",
+    "index.html": "index.html",
+    "js": {
+      "nav.js": "js/nav.js",
+      "script.js": "js/script.js"
+    },
+    "login.html": "login.html",
+    "market.html": "market.html",
+    "settings.html": "settings.html",
+    "style.css": "style.css",
+    "website.html": "website.html"
+  },
+  "installed_at": "2025-05-12T15:42:04Z",
+  "last_updated": "2025-05-12T15:42:04Z"
+}

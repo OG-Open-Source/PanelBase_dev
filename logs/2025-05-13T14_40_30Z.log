@@ -1,0 +1,4 @@
+2025-05-13T15:05:38Z | Discovering themes in 'ext/themes'...
+2025-05-13T15:05:38Z | Theme discovery complete. Processed 2 entries, found 0 valid themes in 'ext/themes'.
+2025-05-13T15:05:38Z | Attempting to create theme manifest in directory 'E:\Github Desktop\PanelBase_dev\panel' for theme 'panel'.
+2025-05-13T15:05:38Z | Theme manifest 'theme.yaml' created successfully in directory 'E:\Github Desktop\PanelBase_dev\panel'.

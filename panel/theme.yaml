@@ -1,0 +1,38 @@
+name: panel
+authors:
+  - name: PanelBase Team
+version: 1.0.0
+description: (Description? The author was too cool for that.)
+source_link: http://localhost/panel-theme/theme.yaml
+structure:
+  docker.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/docker.html
+    sum: d996867e988f9109832672fb21c452aac3b7e8ce5dbba3fecd81b8105a417497
+  filemanager.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/filemanager.html
+    sum: 69c6e213ce852c6aeea1c3878ed39f279d0e40ee7df67de0718d8f352727c449
+  index.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/index.html
+    sum: f14263c6ae3aab8943702ed7e21387c4e047499fbc8e06795de2a6399327215e
+  js:
+    nav.js:
+      url: file:///E:/Github%20Desktop/PanelBase_dev/panel/js/nav.js
+      sum: 589f821c0b3f670bcaa5f31dca034e202d054865b073ad5568025dc3e6fbb92d
+    script.js:
+      url: file:///E:/Github%20Desktop/PanelBase_dev/panel/js/script.js
+      sum: fac1a79c6cfcbe39e79d7b270269f59b861e014335f17d763c45adec2a8a9d92
+  login.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/login.html
+    sum: aba54d82a303e64e823e23aaafe7cfa78065863275f7f8614a5a48e71341d7bc
+  market.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/market.html
+    sum: 45292185c16f47d54db5ade6592f5f54b2a2ebfcd6c471ea4ee8ed952803510c
+  settings.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/settings.html
+    sum: 0ce7644c19ca589f4bec4413aa68297bd3e89626c7ad60b43b72478ee7132757
+  style.css:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/style.css
+    sum: 0f84b963224d026628099cb748064f265d1ed0a45f306618cd89fd26bc3291e4
+  website.html:
+    url: file:///E:/Github%20Desktop/PanelBase_dev/panel/website.html
+    sum: 9dacd15ec1ecdb38aa1a1d9582c160feefa6641e0247dee1f18d6d040165417a
