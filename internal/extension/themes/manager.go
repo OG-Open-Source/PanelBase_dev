@@ -265,19 +265,19 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 			}
 
 			// Now, verify checksum
-			downloadedFile, err := os.Open(currentSavePath)
-			if err != nil {
-				tm.logger.Logf(indentPrefix+"[%d/%d] Error opening downloaded file '%s' for checksum: %v", *downloadedFiles, totalFiles, itemRelativePath, err)
+			// Read the entire file into a byte slice first
+			fileData, readErr := os.ReadFile(currentSavePath)
+			if readErr != nil {
+				tm.logger.Logf(indentPrefix+"[%d/%d] Error reading downloaded file '%s' for checksum: %v", *downloadedFiles, totalFiles, itemRelativePath, readErr)
 				os.Remove(currentSavePath) // Clean up
-				return fmt.Errorf("failed to open downloaded file '%s' for checksum: %w", currentSavePath, err)
+				return fmt.Errorf("failed to read downloaded file '%s' for checksum: %w", currentSavePath, readErr)
 			}
-			defer downloadedFile.Close()
-
+			
 			hasher := sha256.New()
-			if _, err := io.Copy(hasher, downloadedFile); err != nil {
-				tm.logger.Logf(indentPrefix+"[%d/%d] Error hashing downloaded file '%s': %v", *downloadedFiles, totalFiles, itemRelativePath, err)
+			if _, err := hasher.Write(fileData); err != nil { // Write the entire byte slice to the hasher
+				tm.logger.Logf(indentPrefix+"[%d/%d] Error writing file data to hasher for '%s': %v", *downloadedFiles, totalFiles, itemRelativePath, err)
 				os.Remove(currentSavePath) // Clean up
-				return fmt.Errorf("failed to hash downloaded file '%s': %w", currentSavePath, err)
+				return fmt.Errorf("failed to write file data to hasher for '%s': %w", currentSavePath, err)
 			}
 			calculatedSum := hex.EncodeToString(hasher.Sum(nil))
 
@@ -350,25 +350,26 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 						return fmt.Errorf("failed to close local file '%s' after writing: %w", currentSavePath, closeErr)
 					}
 
-					downloadedFileToVerify, err := os.Open(currentSavePath)
-					if err != nil {
-						tm.logger.Logf(indentPrefix+"[%d/%d] Error opening downloaded file '%s' for checksum: %v", *downloadedFiles, totalFiles, itemRelativePath, err)
-						os.Remove(currentSavePath)
-						return fmt.Errorf("failed to open downloaded file '%s' for checksum: %w", currentSavePath, err)
+					// Now, verify checksum for the map item (AssetDetail-like map)
+					// Read the entire file into a byte slice first
+					fileDataToVerify, readErrVerify := os.ReadFile(currentSavePath)
+					if readErrVerify != nil {
+						tm.logger.Logf(indentPrefix+"[%d/%d] Error reading downloaded file '%s' (from map) for checksum: %v", *downloadedFiles, totalFiles, itemRelativePath, readErrVerify)
+						os.Remove(currentSavePath) // Clean up
+						return fmt.Errorf("failed to read downloaded file '%s' (from map) for checksum: %w", currentSavePath, readErrVerify)
 					}
-					defer downloadedFileToVerify.Close()
 
 					hasher := sha256.New()
-					if _, err := io.Copy(hasher, downloadedFileToVerify); err != nil {
-						tm.logger.Logf(indentPrefix+"[%d/%d] Error hashing downloaded file '%s': %v", *downloadedFiles, totalFiles, itemRelativePath, err)
-						os.Remove(currentSavePath)
-						return fmt.Errorf("failed to hash downloaded file '%s': %w", currentSavePath, err)
+					if _, err := hasher.Write(fileDataToVerify); err != nil { // Write the entire byte slice to the hasher
+						tm.logger.Logf(indentPrefix+"[%d/%d] Error writing file data to hasher for '%s' (from map): %v", *downloadedFiles, totalFiles, itemRelativePath, err)
+						os.Remove(currentSavePath) // Clean up
+						return fmt.Errorf("failed to write file data to hasher for '%s' (from map): %w", currentSavePath, err)
 					}
 					calculatedSum := hex.EncodeToString(hasher.Sum(nil))
 
 					if !strings.EqualFold(calculatedSum, sumString) {
 						tm.logger.Logf(indentPrefix+"[%d/%d] Checksum mismatch for '%s'. Expected: %s, Got: %s", *downloadedFiles, totalFiles, itemRelativePath, sumString, calculatedSum)
-						os.Remove(currentSavePath)
+						os.Remove(currentSavePath) // Clean up
 						return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, sumString, calculatedSum)
 					}
 					tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s' (from map).", *downloadedFiles, totalFiles, itemRelativePath)
@@ -440,8 +441,6 @@ func (tm *ThemeManager) _fetchAndValidateDefinition(source string) (meta *ThemeM
 		tm.logger.Logf(indentPrefix+"Could not parse theme YAML from source '%s'.", sourceNameForLog) // Simplified
 		return nil, sourceNameForLog, parsedSourceURL, isLocalSource, fmt.Errorf("failed to parse theme YAML from '%s': %w", sourceNameForLog, unmarshalErr)
 	}
-
-	tm.logger.Logf(indentPrefix+"DEBUG: After Unmarshal, m.SourceLink is: '%s'", m.SourceLink) // DEBUG LOG
 
 	if validateErr := m.Validate(); validateErr != nil {
 		tm.logger.Logf(indentPrefix+"Definition validation error: %v", validateErr)

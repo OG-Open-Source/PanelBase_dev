@@ -17,7 +17,7 @@ structure:
   js:
     nav.js:
       url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/js/nav.js
-      sum: 589f821c0b3f670bcaa5f31dca034e202d054865b073ad5568025dc3e6fbb92d
+      sum: ce93b3bbe7a16dc3d113a8780f9aca5f59acee71a1533f5773f37a43f96b8724
     script.js:
       url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/js/script.js
       sum: fac1a79c6cfcbe39e79d7b270269f59b861e014335f17d763c45adec2a8a9d92
