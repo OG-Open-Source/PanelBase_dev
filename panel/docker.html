@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -184,7 +185,8 @@
         }
 
         /* 更新标签样式 */
-        .tabs, .docker-tabs {
+        .tabs,
+        .docker-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
@@ -255,6 +257,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="top-nav">
         <div class="nav-container">
@@ -544,145 +547,146 @@
     <script src="script.js"></script>
     <script src="nav.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const contextMenu = document.getElementById('containerContextMenu');
-        let selectedContainer = null;
+        document.addEventListener('DOMContentLoaded', function () {
+            const contextMenu = document.getElementById('containerContextMenu');
+            let selectedContainer = null;
 
-        // 为容器列表添加右键事件监听
-        document.getElementById('containerList').addEventListener('contextmenu', function(e) {
-            const row = e.target.closest('tr');
-            if (!row) return;
+            // 为容器列表添加右键事件监听
+            document.getElementById('containerList').addEventListener('contextmenu', function (e) {
+                const row = e.target.closest('tr');
+                if (!row) return;
 
-            e.preventDefault();
-            
-            // 移除其他行的选中状态
-            document.querySelectorAll('.docker-table tr').forEach(tr => {
-                tr.classList.remove('context-selected');
+                e.preventDefault();
+
+                // 移除其他行的选中状态
+                document.querySelectorAll('.docker-table tr').forEach(tr => {
+                    tr.classList.remove('context-selected');
+                });
+
+                // 添加当前行的选中状态
+                row.classList.add('context-selected');
+
+                // 保存选中的容器信息
+                selectedContainer = {
+                    id: row.dataset.containerId,
+                    name: row.dataset.containerName,
+                    status: row.dataset.containerStatus
+                };
+
+                // 获取鼠标相对于视口的位置
+                const x = e.clientX;
+                const y = e.clientY;
+
+                // 获取菜单的尺寸
+                const menuWidth = contextMenu.offsetWidth;
+                const menuHeight = contextMenu.offsetHeight;
+
+                // 获取视口尺寸
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                // 计算菜单的最终位置，这次直接使用clientX/Y
+                let finalX = x;
+                let finalY = y;
+
+                // 确保菜单不会超出右边界
+                if (x + menuWidth > viewportWidth) {
+                    finalX = x - menuWidth;
+                }
+
+                // 确保菜单不会超出下边界
+                if (y + menuHeight > viewportHeight) {
+                    finalY = y - menuHeight;
+                }
+
+                // 设置菜单位置并显示
+                contextMenu.style.left = `${finalX}px`;
+                contextMenu.style.top = `${finalY}px`;
+                contextMenu.style.display = 'block';
+
+                // 根据容器状态启用/禁用菜单项
+                const isRunning = selectedContainer.status === 'running';
+                contextMenu.querySelector('[data-action="start"]').style.display = isRunning ? 'none' : 'flex';
+                contextMenu.querySelector('[data-action="stop"]').style.display = isRunning ? 'flex' : 'none';
             });
-            
-            // 添加当前行的选中状态
-            row.classList.add('context-selected');
-            
-            // 保存选中的容器信息
-            selectedContainer = {
-                id: row.dataset.containerId,
-                name: row.dataset.containerName,
-                status: row.dataset.containerStatus
-            };
 
-            // 获取鼠标相对于视口的位置
-            const x = e.clientX;
-            const y = e.clientY;
-            
-            // 获取菜单的尺寸
-            const menuWidth = contextMenu.offsetWidth;
-            const menuHeight = contextMenu.offsetHeight;
-            
-            // 获取视口尺寸
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            
-            // 计算菜单的最终位置，这次直接使用clientX/Y
-            let finalX = x;
-            let finalY = y;
-            
-            // 确保菜单不会超出右边界
-            if (x + menuWidth > viewportWidth) {
-                finalX = x - menuWidth;
-            }
-            
-            // 确保菜单不会超出下边界
-            if (y + menuHeight > viewportHeight) {
-                finalY = y - menuHeight;
-            }
+            // 点击其他地方关闭右键菜单
+            document.addEventListener('click', function () {
+                contextMenu.style.display = 'none';
+                document.querySelectorAll('.docker-table tr').forEach(tr => {
+                    tr.classList.remove('context-selected');
+                });
+            });
 
-            // 设置菜单位置并显示
-            contextMenu.style.left = `${finalX}px`;
-            contextMenu.style.top = `${finalY}px`;
-            contextMenu.style.display = 'block';
+            // 处理右键菜单点击事件
+            contextMenu.addEventListener('click', function (e) {
+                const action = e.target.closest('.context-menu-item')?.dataset.action;
+                if (!action || !selectedContainer) return;
 
-            // 根据容器状态启用/禁用菜单项
-            const isRunning = selectedContainer.status === 'running';
-            contextMenu.querySelector('[data-action="start"]').style.display = isRunning ? 'none' : 'flex';
-            contextMenu.querySelector('[data-action="stop"]').style.display = isRunning ? 'flex' : 'none';
-        });
+                switch (action) {
+                    case 'start':
+                        startContainer(selectedContainer.id);
+                        break;
+                    case 'stop':
+                        stopContainer(selectedContainer.id);
+                        break;
+                    case 'restart':
+                        restartContainer(selectedContainer.id);
+                        break;
+                    case 'terminal':
+                        openContainerTerminal(selectedContainer.id);
+                        break;
+                    case 'logs':
+                        viewContainerLogs(selectedContainer.id);
+                        break;
+                    case 'stats':
+                        viewContainerStats(selectedContainer.id);
+                        break;
+                    case 'delete':
+                        deleteContainer(selectedContainer.id);
+                        break;
+                }
 
-        // 点击其他地方关闭右键菜单
-        document.addEventListener('click', function() {
-            contextMenu.style.display = 'none';
-            document.querySelectorAll('.docker-table tr').forEach(tr => {
-                tr.classList.remove('context-selected');
+                contextMenu.style.display = 'none';
             });
         });
 
-        // 处理右键菜单点击事件
-        contextMenu.addEventListener('click', function(e) {
-            const action = e.target.closest('.context-menu-item')?.dataset.action;
-            if (!action || !selectedContainer) return;
+        // 容器操作函数
+        function startContainer(containerId) {
+            console.log('Starting container:', containerId);
+            // 实现启动容器的逻辑
+        }
 
-            switch(action) {
-                case 'start':
-                    startContainer(selectedContainer.id);
-                    break;
-                case 'stop':
-                    stopContainer(selectedContainer.id);
-                    break;
-                case 'restart':
-                    restartContainer(selectedContainer.id);
-                    break;
-                case 'terminal':
-                    openContainerTerminal(selectedContainer.id);
-                    break;
-                case 'logs':
-                    viewContainerLogs(selectedContainer.id);
-                    break;
-                case 'stats':
-                    viewContainerStats(selectedContainer.id);
-                    break;
-                case 'delete':
-                    deleteContainer(selectedContainer.id);
-                    break;
-            }
+        function stopContainer(containerId) {
+            console.log('Stopping container:', containerId);
+            // 实现停止容器的逻辑
+        }
 
-            contextMenu.style.display = 'none';
-        });
-    });
+        function restartContainer(containerId) {
+            console.log('Restarting container:', containerId);
+            // 实现重启容器的逻辑
+        }
 
-    // 容器操作函数
-    function startContainer(containerId) {
-        console.log('Starting container:', containerId);
-        // 实现启动容器的逻辑
-    }
+        function openContainerTerminal(containerId) {
+            console.log('Opening terminal for container:', containerId);
+            // 实现打开容器终端的逻辑
+        }
 
-    function stopContainer(containerId) {
-        console.log('Stopping container:', containerId);
-        // 实现停止容器的逻辑
-    }
+        function viewContainerLogs(containerId) {
+            console.log('Viewing logs for container:', containerId);
+            // 实现查看容器日志的逻辑
+        }
 
-    function restartContainer(containerId) {
-        console.log('Restarting container:', containerId);
-        // 实现重启容器的逻辑
-    }
+        function viewContainerStats(containerId) {
+            console.log('Viewing stats for container:', containerId);
+            // 实现查看容器资源占用的逻辑
+        }
 
-    function openContainerTerminal(containerId) {
-        console.log('Opening terminal for container:', containerId);
-        // 实现打开容器终端的逻辑
-    }
-
-    function viewContainerLogs(containerId) {
-        console.log('Viewing logs for container:', containerId);
-        // 实现查看容器日志的逻辑
-    }
-
-    function viewContainerStats(containerId) {
-        console.log('Viewing stats for container:', containerId);
-        // 实现查看容器资源占用的逻辑
-    }
-
-    function deleteContainer(containerId) {
-        console.log('Deleting container:', containerId);
-        // 实现删除容器的逻辑
-    }
+        function deleteContainer(containerId) {
+            console.log('Deleting container:', containerId);
+            // 实现删除容器的逻辑
+        }
     </script>
 </body>
+
 </html>

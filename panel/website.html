@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -214,26 +215,26 @@
             gap: 20px;
             margin-bottom: 30px;
         }
-        
+
         .defense-actions {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
-        
+
         .action-group {
             background: rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 8px;
         }
-        
+
         .action-group h3 {
             margin-top: 0;
             margin-bottom: 15px;
             color: var(--primary-color);
             font-size: 16px;
         }
-        
+
         .defense-btn {
             width: 100%;
             padding: 10px;
@@ -248,11 +249,11 @@
             gap: 8px;
             transition: all 0.3s ease;
         }
-        
+
         .defense-btn:hover {
             background: rgba(33, 150, 243, 0.2);
         }
-        
+
         /* 性能优化样式 */
         .optimize-modes {
             display: grid;
@@ -260,7 +261,7 @@
             gap: 30px;
             margin-top: 20px;
         }
-        
+
         .mode-card {
             background: rgba(255, 255, 255, 0.05);
             padding: 25px;
@@ -268,12 +269,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .mode-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .mode-card h3 {
             margin: 0;
             color: var(--primary-color);
@@ -281,18 +282,18 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .mode-card p {
             color: #666;
             margin: 10px 0;
         }
-        
+
         .mode-card ul {
             list-style: none;
             padding: 0;
             margin: 15px 0;
         }
-        
+
         .mode-card ul li {
             margin-bottom: 8px;
             color: #666;
@@ -300,12 +301,12 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .mode-card ul li:before {
             content: "•";
             color: var(--primary-color);
         }
-        
+
         .mode-btn {
             width: 100%;
             padding: 10px;
@@ -316,7 +317,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .mode-btn:hover {
             filter: brightness(1.1);
         }
@@ -328,7 +329,8 @@
             margin-bottom: 30px;
         }
 
-        .map-container, .threat-list {
+        .map-container,
+        .threat-list {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             padding: 20px;
@@ -350,7 +352,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(32, 178, 170, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(32, 178, 170, 0.1) 1px, transparent 1px);
             background-size: 40px 40px;
@@ -393,6 +395,7 @@
                 height: 10px;
                 opacity: 1;
             }
+
             100% {
                 width: 50px;
                 height: 50px;
@@ -404,6 +407,7 @@
             0% {
                 transform: translateX(-100%);
             }
+
             100% {
                 transform: translateX(100%);
             }
@@ -572,6 +576,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="top-nav">
         <div class="nav-container">
@@ -795,7 +800,7 @@
                         <span class="stat-value" id="cfStatus">已配置</span>
                     </div>
                 </div>
-                
+
                 <!-- 添加新的防御监控面板 -->
                 <div class="defense-monitor">
                     <!-- 沙盘地图 -->
@@ -923,7 +928,7 @@
                             <i class="fas fa-shield"></i> 开启WAF
                         </button>
                     </div>
-                    
+
                     <div class="action-group">
                         <h3>CloudFlare防护</h3>
                         <button class="defense-btn" onclick="setupCloudflare()">
@@ -933,7 +938,7 @@
                             <i class="fas fa-shield-check"></i> 配置自动开盾
                         </button>
                     </div>
-                    
+
                     <div class="action-group">
                         <h3>监控管理</h3>
                         <button class="defense-btn" onclick="viewSSHLogs()">
@@ -969,7 +974,7 @@
                         </ul>
                         <button class="mode-btn">应用标准模式</button>
                     </div>
-                    
+
                     <div class="mode-card" onclick="setOptimizeMode('performance')">
                         <h3><i class="fas fa-rocket"></i> 高性能模式</h3>
                         <p>推荐2核2G以上服务器</p>
@@ -1064,7 +1069,7 @@
         }
 
         // 点击模态框外部关闭
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('wordpressModal');
             if (event.target == modal) {
                 closeWordPressModal();
@@ -1095,10 +1100,10 @@
         }
 
         // 更新点击模态框外部关闭的逻辑
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const wordpressModal = document.getElementById('wordpressModal');
             const proxyIPModal = document.getElementById('proxyIPModal');
-            
+
             if (event.target == wordpressModal) {
                 closeWordPressModal();
             }
@@ -1108,4 +1113,5 @@
         }
     </script>
 </body>
+
 </html>

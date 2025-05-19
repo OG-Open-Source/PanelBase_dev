@@ -45,13 +45,13 @@ function updateCPU() {
     const usage = getRandomValue(1, 100);
     const gauge = document.getElementById('cpuGauge');
     const gaugeValue = gauge.querySelector('.gauge-value');
-    
+
     gauge.style.background = `conic-gradient(
         ${usage >= 80 ? 'var(--status-high)' : usage >= 60 ? 'var(--status-medium)' : 'var(--status-low)'} ${usage}%,
         #e0e0e0 ${usage}%
     )`;
     gaugeValue.textContent = `${usage}%`;
-    
+
     // 更新系统负载
     const loads = [
         (Math.random() * 2).toFixed(2),
@@ -67,29 +67,29 @@ function updateMemory() {
     const usedMem = getRandomValue(300, 500); // MB
     const cacheMem = getRandomValue(100, 200); // MB
     const availableMem = totalMem - usedMem - cacheMem;
-    
+
     const usedPercentage = (usedMem / totalMem) * 100;
     const cachePercentage = (cacheMem / totalMem) * 100;
-    
+
     // 更新内存详情
-    document.querySelector('.memory-item:nth-child(1) .memory-value').textContent = 
+    document.querySelector('.memory-item:nth-child(1) .memory-value').textContent =
         `${usedMem.toFixed(2)} MB`;
-    document.querySelector('.memory-item:nth-child(2) .memory-value').textContent = 
+    document.querySelector('.memory-item:nth-child(2) .memory-value').textContent =
         `${cacheMem.toFixed(2)} MB`;
-    document.querySelector('.memory-item:nth-child(3) .memory-value').textContent = 
+    document.querySelector('.memory-item:nth-child(3) .memory-value').textContent =
         `${availableMem.toFixed(2)} MB`;
-    
+
     // 更新进度条
     const progressUsed = document.querySelector('.progress-used');
     const progressCache = document.querySelector('.progress-cache');
     progressUsed.style.width = `${usedPercentage}%`;
     progressCache.style.width = `${cachePercentage}%`;
-    
+
     // 更新总使用量显示
     const totalUsedPercentage = ((usedMem + cacheMem) / totalMem) * 100;
-    document.querySelector('.progress-text').textContent = 
+    document.querySelector('.progress-text').textContent =
         `${(usedMem + cacheMem).toFixed(2)}/${totalMem} MB (${totalUsedPercentage.toFixed(2)}%)`;
-    
+
     // 更新颜色
     updateProgressStyle(progressUsed, totalUsedPercentage);
 }
@@ -99,10 +99,10 @@ function updateSwap() {
     const totalSwap = 2048; // 2GB
     const usedSwap = getRandomValue(0, totalSwap);
     const percentage = Math.round((usedSwap / totalSwap) * 100);
-    
+
     const swapProgress = document.querySelector('.swap-usage .progress');
     const swapText = document.querySelector('.swap-usage .progress-text');
-    
+
     swapProgress.style.width = `${percentage}%`;
     updateProgressStyle(swapProgress, percentage);
     swapText.textContent = `${formatSize(usedSwap)}/${formatSize(totalSwap)} (${percentage}%)`;
@@ -111,15 +111,15 @@ function updateSwap() {
 // 更新硬盘使用
 function updateDiskUsage() {
     const mountPoints = document.querySelectorAll('.disk-mount-point');
-    
+
     mountPoints.forEach(mount => {
         const total = getRandomValue(100, 1000) * 1024 * 1024 * 1024; // 100GB-1TB
         const used = getRandomValue(0, total);
         const percentage = Math.round((used / total) * 100);
-        
+
         const progress = mount.querySelector('.progress');
         const text = mount.querySelector('.progress-text');
-        
+
         progress.style.width = `${percentage}%`;
         updateProgressStyle(progress, percentage);
         text.textContent = `${formatSize(used)}/${formatSize(total)} (${percentage}%)`;
@@ -146,10 +146,10 @@ function updateLocation(country, city) {
 function updateNetwork() {
     const received = formatSize(getRandomValue(100, 200) * 1024 * 1024 * 1024);
     const sent = formatSize(getRandomValue(40, 60) * 1024 * 1024 * 1024);
-    
+
     document.querySelector('.info-item .value:contains("总接收")').textContent = received;
     document.querySelector('.info-item .value:contains("总发送")').textContent = sent;
-    
+
     // 更新系统时间
     const now = new Date();
     const timeString = now.toLocaleString('zh-CN', {
@@ -161,12 +161,12 @@ function updateNetwork() {
         minute: '2-digit',
         hour12: true
     });
-    document.querySelector('.info-item .value:contains("系统时间")').textContent = 
+    document.querySelector('.info-item .value:contains("系统时间")').textContent =
         `Asia/Shanghai ${timeString}`;
-    
+
     // 模拟更新位置信息
     updateLocation('JP', 'Togoshi');
-    
+
     // 更新DNS状态显示
     const dnsStatus = document.querySelector('.info-item .value:contains("DNS")');
     if (dnsStatus) {
@@ -189,11 +189,11 @@ function updateAllData() {
 document.addEventListener('DOMContentLoaded', () => {
     updateTime();
     updateAllData();
-    
+
     // 定时更新
     setInterval(updateTime, 1000);
     setInterval(updateAllData, 3000);
-    
+
     // 默认显示第一个标签页
     const firstTabButton = document.querySelector('.tab-btn');
     if (firstTabButton) {
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 编辑主机名
 async function editHostname() {
     const currentHostname = document.querySelector('.info-item .value:contains("主机名")').textContent;
-    
+
     const newHostname = await showConfirmModal(
         "修改主机名",
         `当前主机名: ${currentHostname}`,
@@ -229,19 +229,19 @@ async function editHostname() {
             }
         }
     );
-    
+
     if (newHostname && newHostname !== currentHostname) {
         showProgressModal("修改主机名");
-        
+
         // 模拟修改过程
         let progress = 0;
         const interval = setInterval(() => {
             progress += 20;
-            
+
             // 模拟不同阶段的消息
             let message = '';
             let log = '';
-            
+
             if (progress <= 20) {
                 message = '验证主机名...';
                 log = '检查主机名格式是否合法...';
@@ -258,13 +258,13 @@ async function editHostname() {
                 message = '完成修改...';
                 log = '主机名修改完成';
             }
-            
+
             updateProgress(progress, message, log);
-            
+
             if (progress >= 100) {
                 clearInterval(interval);
                 completeProgress(true, "主机名修改成功！");
-                
+
                 // 更新显示的主机名
                 document.querySelector('.info-item .value:contains("主机名")').textContent = newHostname;
             }
@@ -281,14 +281,14 @@ function showProgressModal(title) {
     const statusMessage = document.getElementById('statusMessage');
     const logContainer = document.getElementById('logContainer');
     const closeBtn = document.getElementById('modalCloseBtn');
-    
+
     modalTitle.textContent = title;
     progress.style.width = '0%';
     progressText.textContent = '0%';
     statusMessage.textContent = '正在准备...';
     logContainer.innerHTML = '';
     closeBtn.style.display = 'none';
-    
+
     modal.style.display = 'flex';
 }
 
@@ -298,14 +298,14 @@ function updateProgress(percent, message, log) {
     const progressText = document.getElementById('progressText');
     const statusMessage = document.getElementById('statusMessage');
     const logContainer = document.getElementById('logContainer');
-    
+
     progress.style.width = `${percent}%`;
     progressText.textContent = `${percent}%`;
-    
+
     if (message) {
         statusMessage.textContent = message;
     }
-    
+
     if (log) {
         const logEntry = document.createElement('div');
         logEntry.className = 'log-entry';
@@ -319,11 +319,11 @@ function updateProgress(percent, message, log) {
 function completeProgress(success, message) {
     const statusMessage = document.getElementById('statusMessage');
     const closeBtn = document.getElementById('modalCloseBtn');
-    
+
     statusMessage.textContent = message;
     statusMessage.style.color = success ? 'var(--status-low)' : 'var(--status-high)';
     closeBtn.style.display = 'block';
-    
+
     closeBtn.onclick = () => {
         document.getElementById('progressModal').style.display = 'none';
         statusMessage.style.color = 'var(--text-color)';
@@ -340,16 +340,16 @@ function showConfirmModal(title, message, options = {}) {
         const input = document.getElementById('confirmInput');
         const okBtn = document.getElementById('confirmOkBtn');
         const cancelBtn = document.getElementById('confirmCancelBtn');
-        
+
         titleEl.textContent = title;
         messageEl.textContent = message;
-        
+
         // 如果需要输入框
         if (options.input) {
             inputContainer.style.display = 'block';
             input.value = options.defaultValue || '';
             input.placeholder = options.placeholder || '请输入...';
-            
+
             // 添加输入验证
             input.oninput = () => {
                 if (options.validate) {
@@ -367,15 +367,15 @@ function showConfirmModal(title, message, options = {}) {
         } else {
             inputContainer.style.display = 'none';
         }
-        
+
         modal.style.display = 'flex';
-        
+
         if (options.input) {
             input.focus();
             // 触发一次验证
             input.dispatchEvent(new Event('input'));
         }
-        
+
         okBtn.onclick = () => {
             if (options.input && options.validate) {
                 const result = options.validate(input.value);
@@ -388,12 +388,12 @@ function showConfirmModal(title, message, options = {}) {
             modal.style.display = 'none';
             resolve(options.input ? input.value : true);
         };
-        
+
         cancelBtn.onclick = () => {
             modal.style.display = 'none';
             resolve(false);
         };
-        
+
         // 添加回车键确认功能
         if (options.input) {
             input.onkeyup = (e) => {
@@ -411,19 +411,19 @@ async function updateSystem() {
         "系统更新",
         "确定要执行系统更新吗？此操作可能需要几分钟时间。"
     );
-    
+
     if (confirmed) {
         showProgressModal("系统更新");
-        
+
         // 模拟更新过程
         let progress = 0;
         const interval = setInterval(() => {
             progress += 5;
-            
+
             // 模拟不同阶段的更新消息
             let message = '';
             let log = '';
-            
+
             if (progress <= 20) {
                 message = '正在检查更新...';
                 log = '正在获取软件源信息...';
@@ -440,9 +440,9 @@ async function updateSystem() {
                 message = '完成更新...';
                 log = '清理临时文件...';
             }
-            
+
             updateProgress(progress, message, log);
-            
+
             if (progress >= 100) {
                 clearInterval(interval);
                 completeProgress(true, "系统更新完成！");
@@ -457,19 +457,19 @@ async function cleanSystem() {
         "系统清理",
         "确定要执行系统清理吗？此操作将清理系统缓存和临时文件。"
     );
-    
+
     if (confirmed) {
         showProgressModal("系统清理");
-        
+
         // 模拟清理过程
         let progress = 0;
         const interval = setInterval(() => {
             progress += 10;
-            
+
             // 模拟不同阶段的清理消息
             let message = '';
             let log = '';
-            
+
             if (progress <= 20) {
                 message = '扫描系统...';
                 log = '扫描系统文件...';
@@ -486,9 +486,9 @@ async function cleanSystem() {
                 message = '完成清理...';
                 log = '优化系统存储空间...';
             }
-            
+
             updateProgress(progress, message, log);
-            
+
             if (progress >= 100) {
                 clearInterval(interval);
                 completeProgress(true, "系统清理完成！");
@@ -512,12 +512,12 @@ function configureSwap() {
     const modal = document.getElementById('swapModal');
     const customInput = document.querySelector('.custom-swap-input');
     const buttons = document.querySelectorAll('.swap-option-btn');
-    
+
     // 重置所有按钮状态
     buttons.forEach(btn => btn.classList.remove('selected'));
     customInput.style.display = 'none';
     document.getElementById('customSwapSize').value = '';
-    
+
     modal.style.display = 'flex';
 }
 
@@ -529,7 +529,7 @@ function selectSwapSize(size) {
     selectedSwapSize = size;
     const buttons = document.querySelectorAll('.swap-option-btn');
     const customInput = document.querySelector('.custom-swap-input');
-    
+
     // 更新按钮选中状态
     buttons.forEach(btn => {
         if (btn.onclick.toString().includes(size)) {
@@ -538,7 +538,7 @@ function selectSwapSize(size) {
             btn.classList.remove('selected');
         }
     });
-    
+
     // 隐藏自定义输入
     customInput.style.display = 'none';
 }
@@ -546,13 +546,13 @@ function selectSwapSize(size) {
 function showCustomSwapInput() {
     const customInput = document.querySelector('.custom-swap-input');
     const buttons = document.querySelectorAll('.swap-option-btn');
-    
+
     // 清除其他按钮的选中状态
     buttons.forEach(btn => btn.classList.remove('selected'));
-    
+
     // 选中自定义按钮
     buttons[3].classList.add('selected');
-    
+
     // 显示自定义输入框
     customInput.style.display = 'block';
     document.getElementById('customSwapSize').focus();
@@ -560,7 +560,7 @@ function showCustomSwapInput() {
 
 function submitSwapSize() {
     let swapSize;
-    
+
     if (document.querySelector('.swap-option-btn.custom').classList.contains('selected')) {
         // 获取自定义输入的大小
         swapSize = parseInt(document.getElementById('customSwapSize').value);
@@ -574,22 +574,22 @@ function submitSwapSize() {
         alert('请选择虚拟内存大小！');
         return;
     }
-    
+
     // 这里添加与后端API通信的代码
     console.log(`设置虚拟内存大小为：${swapSize}M`);
-    
+
     // 显示进度模态框
     showProgressModal("设置虚拟内存");
     closeSwapModal();
-    
+
     // 模拟设置过程
     let progress = 0;
     const interval = setInterval(() => {
         progress += 20;
-        
+
         let message = '';
         let log = '';
-        
+
         if (progress <= 20) {
             message = '检查系统...';
             log = '验证系统支持...';
@@ -606,9 +606,9 @@ function submitSwapSize() {
             message = '完成设置...';
             log = '虚拟内存设置完成';
         }
-        
+
         updateProgress(progress, message, log);
-        
+
         if (progress >= 100) {
             clearInterval(interval);
             completeProgress(true, "虚拟内存设置成功！");
@@ -617,7 +617,7 @@ function submitSwapSize() {
 }
 
 // 点击模态框外部关闭
-window.onclick = function(event) {
+window.onclick = function (event) {
     const modal = document.getElementById('swapModal');
     if (event.target === modal) {
         closeSwapModal();
@@ -626,40 +626,40 @@ window.onclick = function(event) {
 
 // 添加模拟进程数据
 const mockProcesses = [
-    { 
-        name: 'nginx', 
+    {
+        name: 'nginx',
         path: '/usr/sbin/nginx',
-        pid: 1234, 
-        cpu: 2.5, 
-        memory: 128.5 
+        pid: 1234,
+        cpu: 2.5,
+        memory: 128.5
     },
-    { 
-        name: 'mysql', 
+    {
+        name: 'mysql',
         path: '/usr/sbin/mysqld',
-        pid: 1235, 
-        cpu: 4.8, 
-        memory: 356.2 
+        pid: 1235,
+        cpu: 4.8,
+        memory: 356.2
     },
-    { 
-        name: 'php-fpm', 
+    {
+        name: 'php-fpm',
         path: '/usr/sbin/php-fpm7.4',
-        pid: 1236, 
-        cpu: 1.2, 
-        memory: 82.4 
+        pid: 1236,
+        cpu: 1.2,
+        memory: 82.4
     },
-    { 
-        name: 'docker', 
+    {
+        name: 'docker',
         path: '/usr/bin/dockerd',
-        pid: 1237, 
-        cpu: 3.7, 
-        memory: 245.8 
+        pid: 1237,
+        cpu: 3.7,
+        memory: 245.8
     },
-    { 
-        name: 'sshd', 
+    {
+        name: 'sshd',
         path: '/usr/sbin/sshd',
-        pid: 1238, 
-        cpu: 0.5, 
-        memory: 42.3 
+        pid: 1238,
+        cpu: 0.5,
+        memory: 42.3
     }
 ];
 
@@ -671,7 +671,7 @@ function renderProcessList() {
     mockProcesses.forEach(process => {
         const processItem = document.createElement('div');
         processItem.className = 'process-item';
-        
+
         // 设置CPU和内存使用率的样式类
         const cpuClass = process.cpu > 5 ? 'high' : '';
         const memoryClass = process.memory > 300 ? 'high' : '';
@@ -693,7 +693,7 @@ function renderProcessList() {
                 </button>
             </div>
         `;
-        
+
         processList.appendChild(processItem);
     });
 }
@@ -716,7 +716,7 @@ function killProcess(pid) {
 document.addEventListener('DOMContentLoaded', () => {
     // ... 其他初始化代码 ...
     renderProcessList();
-    
+
     // 每5秒更新一次进程数据
     setInterval(() => {
         // 随机更新CPU和内存使用率
@@ -968,8 +968,8 @@ function renderWebsiteList() {
             <td>${site.certExpiry}</td>
             <td>
                 <span class="certificate-status certificate-${site.status}">
-                    ${site.status === 'valid' ? '有效' : 
-                      site.status === 'expiring' ? '即将过期' : '已过期'}
+                    ${site.status === 'valid' ? '有效' :
+            site.status === 'expiring' ? '即将过期' : '已过期'}
                 </span>
             </td>
             <td class="site-actions">
@@ -1009,7 +1009,7 @@ function renderDatabaseList() {
 // 在页面加载时初始化
 document.addEventListener('DOMContentLoaded', () => {
     // ... 其他初始化代码 ...
-    
+
     // 如果在网站管理页面，渲染网站相关列表
     if (document.querySelector('.website-table')) {
         renderWebsiteList();
@@ -1021,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderContainerList() {
     const containerList = document.getElementById('containerList');
     if (!containerList) return;
-    
+
     containerList.innerHTML = mockContainers.map(container => `
         <tr>
             <td>${container.id.substring(0, 12)}</td>
@@ -1051,7 +1051,7 @@ function renderContainerList() {
             </td>
         </tr>
     `).join('');
-    
+
     updateDockerStats(); // 更新统计数据
 }
 
@@ -1059,7 +1059,7 @@ function renderContainerList() {
 function renderImageList() {
     const imageList = document.getElementById('imageList');
     if (!imageList) return;
-    
+
     imageList.innerHTML = mockImages.map(image => `
         <tr>
             <td>${image.id.substring(7, 19)}</td>
@@ -1079,7 +1079,7 @@ function renderImageList() {
 function renderNetworkList() {
     const networkList = document.getElementById('networkList');
     if (!networkList) return;
-    
+
     networkList.innerHTML = mockNetworks.map(network => `
         <tr>
             <td>${network.id}</td>
@@ -1099,7 +1099,7 @@ function renderNetworkList() {
 function renderVolumeList() {
     const volumeList = document.getElementById('volumeList');
     if (!volumeList) return;
-    
+
     volumeList.innerHTML = mockVolumes.map(volume => `
         <tr>
             <td>${volume.name}</td>
@@ -1175,7 +1175,7 @@ function deleteContainer(id) {
 // 修改页面加载事件，添加Docker列表的初始化
 document.addEventListener('DOMContentLoaded', () => {
     // ... 其他初始化代码 ...
-    
+
     // 如果在Docker页面，渲染Docker相关列表
     if (document.getElementById('containerList')) {
         renderContainerList();

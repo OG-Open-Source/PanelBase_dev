@@ -273,9 +273,8 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 
 			if !strings.EqualFold(calculatedSum, asset.Sum) {
 				tm.logger.Logf(indentPrefix+"[%d/%d] Checksum mismatch for '%s'. Expected: %s, Got: %s", *downloadedFiles, totalFiles, itemRelativePath, asset.Sum, calculatedSum)
-				// os.Remove(currentSavePath) // Clean up - File preserved for inspection
-				tm.logger.Logf(indentPrefix+"[%d/%d] File preserved for inspection due to checksum mismatch: %s", *downloadedFiles, totalFiles, currentSavePath)
-				return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s. File preserved at %s", name, asset.Sum, calculatedSum, currentSavePath)
+				os.Remove(currentSavePath) // Clean up
+				return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, asset.Sum, calculatedSum)
 			}
 			tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s'.", *downloadedFiles, totalFiles, itemRelativePath)
 
@@ -352,9 +351,8 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 
 					if !strings.EqualFold(calculatedSum, sumString) {
 						tm.logger.Logf(indentPrefix+"[%d/%d] Checksum mismatch for '%s'. Expected: %s, Got: %s", *downloadedFiles, totalFiles, itemRelativePath, sumString, calculatedSum)
-						// os.Remove(currentSavePath) // Clean up - File preserved for inspection
-						tm.logger.Logf(indentPrefix+"[%d/%d] File preserved for inspection due to checksum mismatch: %s", *downloadedFiles, totalFiles, currentSavePath)
-						return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s. File preserved at %s", name, sumString, calculatedSum, currentSavePath)
+						os.Remove(currentSavePath) // Clean up
+						return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, sumString, calculatedSum)
 					}
 					tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s' (from map).", *downloadedFiles, totalFiles, itemRelativePath)
 

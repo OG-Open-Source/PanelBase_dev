@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,6 +190,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="top-nav">
         <div class="nav-container">
@@ -425,7 +427,7 @@
     <script src="nav.js"></script>
     <script>
         let currentPath = '/';
-        
+
         function updatePathNavigator(path) {
             const pathParts = path.split('/').filter(p => p);
             const navigator = document.querySelector('.path-navigator');
@@ -435,7 +437,7 @@
                     <span>/</span>
                 </div>
             `;
-            
+
             let currentPath = '';
             pathParts.forEach(part => {
                 currentPath += '/' + part;
@@ -511,162 +513,163 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const contextMenu = document.getElementById('fileContextMenu');
-        let selectedFile = null;
+        document.addEventListener('DOMContentLoaded', function () {
+            const contextMenu = document.getElementById('fileContextMenu');
+            let selectedFile = null;
 
-        // 为文件列表添加右键事件监听
-        document.querySelector('.file-list').addEventListener('contextmenu', function(e) {
-            const fileItem = e.target.closest('.file-item');
-            if (!fileItem) return;
+            // 为文件列表添加右键事件监听
+            document.querySelector('.file-list').addEventListener('contextmenu', function (e) {
+                const fileItem = e.target.closest('.file-item');
+                if (!fileItem) return;
 
-            e.preventDefault();
-            
-            // 移除其他项的选中状态
-            document.querySelectorAll('.file-item').forEach(item => {
-                item.classList.remove('selected');
+                e.preventDefault();
+
+                // 移除其他项的选中状态
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+
+                // 添加当前项的选中状态
+                fileItem.classList.add('selected');
+
+                // 保存选中的文件信息
+                selectedFile = {
+                    name: fileItem.querySelector('.file-name').textContent,
+                    type: fileItem.querySelector('.file-icon i').classList.contains('fa-folder') ? 'folder' :
+                        fileItem.querySelector('.file-icon i').classList.contains('fa-file-archive') ? 'archive' : 'file'
+                };
+
+                // 获取鼠标位置
+                const x = e.clientX;
+                const y = e.clientY;
+
+                // 获取菜单尺寸
+                const menuWidth = contextMenu.offsetWidth;
+                const menuHeight = contextMenu.offsetHeight;
+
+                // 获取视口尺寸
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                // 计算菜单位置
+                let finalX = x;
+                let finalY = y;
+
+                // 确保菜单不会超出右边界
+                if (x + menuWidth > viewportWidth) {
+                    finalX = x - menuWidth;
+                }
+
+                // 确保菜单不会超出下边界
+                if (y + menuHeight > viewportHeight) {
+                    finalY = y - menuHeight;
+                }
+
+                // 设置菜单位置并显示
+                contextMenu.style.left = `${finalX}px`;
+                contextMenu.style.top = `${finalY}px`;
+                contextMenu.style.display = 'block';
+
+                // 根据文件类型显示/隐藏相应的菜单项
+                const folderActions = contextMenu.querySelectorAll('.folder-action');
+                const fileActions = contextMenu.querySelectorAll('.file-action');
+                const archiveActions = contextMenu.querySelectorAll('.archive-action');
+
+                folderActions.forEach(item => item.style.display = selectedFile.type === 'folder' ? 'flex' : 'none');
+                fileActions.forEach(item => item.style.display = selectedFile.type === 'file' ? 'flex' : 'none');
+                archiveActions.forEach(item => item.style.display = selectedFile.type === 'archive' ? 'flex' : 'none');
             });
-            
-            // 添加当前项的选中状态
-            fileItem.classList.add('selected');
-            
-            // 保存选中的文件信息
-            selectedFile = {
-                name: fileItem.querySelector('.file-name').textContent,
-                type: fileItem.querySelector('.file-icon i').classList.contains('fa-folder') ? 'folder' : 
-                      fileItem.querySelector('.file-icon i').classList.contains('fa-file-archive') ? 'archive' : 'file'
-            };
 
-            // 获取鼠标位置
-            const x = e.clientX;
-            const y = e.clientY;
-            
-            // 获取菜单尺寸
-            const menuWidth = contextMenu.offsetWidth;
-            const menuHeight = contextMenu.offsetHeight;
-            
-            // 获取视口尺寸
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            
-            // 计算菜单位置
-            let finalX = x;
-            let finalY = y;
-            
-            // 确保菜单不会超出右边界
-            if (x + menuWidth > viewportWidth) {
-                finalX = x - menuWidth;
-            }
-            
-            // 确保菜单不会超出下边界
-            if (y + menuHeight > viewportHeight) {
-                finalY = y - menuHeight;
-            }
+            // 点击其他地方关闭右键菜单
+            document.addEventListener('click', function () {
+                contextMenu.style.display = 'none';
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+            });
 
-            // 设置菜单位置并显示
-            contextMenu.style.left = `${finalX}px`;
-            contextMenu.style.top = `${finalY}px`;
-            contextMenu.style.display = 'block';
+            // 处理右键菜单点击事件
+            contextMenu.addEventListener('click', function (e) {
+                const action = e.target.closest('.context-menu-item')?.dataset.action;
+                if (!action || !selectedFile) return;
 
-            // 根据文件类型显示/隐藏相应的菜单项
-            const folderActions = contextMenu.querySelectorAll('.folder-action');
-            const fileActions = contextMenu.querySelectorAll('.file-action');
-            const archiveActions = contextMenu.querySelectorAll('.archive-action');
+                switch (action) {
+                    case 'open':
+                        if (selectedFile.type === 'folder') {
+                            navigateTo(currentPath + '/' + selectedFile.name);
+                        }
+                        break;
+                    case 'edit':
+                        editFile(selectedFile.name);
+                        break;
+                    case 'view':
+                        viewFile(selectedFile.name);
+                        break;
+                    case 'download':
+                        downloadFile(selectedFile.name);
+                        break;
+                    case 'compress':
+                        compressItem(selectedFile.name);
+                        break;
+                    case 'extract':
+                        extractArchive(selectedFile.name);
+                        break;
+                    case 'permission':
+                        changePermission(selectedFile.name);
+                        break;
+                    case 'rename':
+                        renameItem(selectedFile.name);
+                        break;
+                    case 'delete':
+                        deleteItem(selectedFile.name);
+                        break;
+                }
 
-            folderActions.forEach(item => item.style.display = selectedFile.type === 'folder' ? 'flex' : 'none');
-            fileActions.forEach(item => item.style.display = selectedFile.type === 'file' ? 'flex' : 'none');
-            archiveActions.forEach(item => item.style.display = selectedFile.type === 'archive' ? 'flex' : 'none');
-        });
-
-        // 点击其他地方关闭右键菜单
-        document.addEventListener('click', function() {
-            contextMenu.style.display = 'none';
-            document.querySelectorAll('.file-item').forEach(item => {
-                item.classList.remove('selected');
+                contextMenu.style.display = 'none';
             });
         });
 
-        // 处理右键菜单点击事件
-        contextMenu.addEventListener('click', function(e) {
-            const action = e.target.closest('.context-menu-item')?.dataset.action;
-            if (!action || !selectedFile) return;
+        // 文件操作函数
+        function editFile(filename) {
+            console.log('Editing file:', filename);
+            // 实现文件编辑逻辑
+        }
 
-            switch(action) {
-                case 'open':
-                    if (selectedFile.type === 'folder') {
-                        navigateTo(currentPath + '/' + selectedFile.name);
-                    }
-                    break;
-                case 'edit':
-                    editFile(selectedFile.name);
-                    break;
-                case 'view':
-                    viewFile(selectedFile.name);
-                    break;
-                case 'download':
-                    downloadFile(selectedFile.name);
-                    break;
-                case 'compress':
-                    compressItem(selectedFile.name);
-                    break;
-                case 'extract':
-                    extractArchive(selectedFile.name);
-                    break;
-                case 'permission':
-                    changePermission(selectedFile.name);
-                    break;
-                case 'rename':
-                    renameItem(selectedFile.name);
-                    break;
-                case 'delete':
-                    deleteItem(selectedFile.name);
-                    break;
-            }
+        function viewFile(filename) {
+            console.log('Viewing file:', filename);
+            // 实现文件查看逻辑
+        }
 
-            contextMenu.style.display = 'none';
-        });
-    });
+        function downloadFile(filename) {
+            console.log('Downloading file:', filename);
+            // 实现文件下载逻辑
+        }
 
-    // 文件操作函数
-    function editFile(filename) {
-        console.log('Editing file:', filename);
-        // 实现文件编辑逻辑
-    }
+        function compressItem(name) {
+            console.log('Compressing:', name);
+            // 实现压缩逻辑
+        }
 
-    function viewFile(filename) {
-        console.log('Viewing file:', filename);
-        // 实现文件查看逻辑
-    }
+        function extractArchive(filename) {
+            console.log('Extracting archive:', filename);
+            // 实现解压逻辑
+        }
 
-    function downloadFile(filename) {
-        console.log('Downloading file:', filename);
-        // 实现文件下载逻辑
-    }
+        function changePermission(name) {
+            console.log('Changing permission for:', name);
+            // 实现权限修改逻辑
+        }
 
-    function compressItem(name) {
-        console.log('Compressing:', name);
-        // 实现压缩逻辑
-    }
+        function renameItem(name) {
+            console.log('Renaming:', name);
+            // 实现重命名逻辑
+        }
 
-    function extractArchive(filename) {
-        console.log('Extracting archive:', filename);
-        // 实现解压逻辑
-    }
-
-    function changePermission(name) {
-        console.log('Changing permission for:', name);
-        // 实现权限修改逻辑
-    }
-
-    function renameItem(name) {
-        console.log('Renaming:', name);
-        // 实现重命名逻辑
-    }
-
-    function deleteItem(name) {
-        console.log('Deleting:', name);
-        // 实现删除逻辑
-    }
+        function deleteItem(name) {
+            console.log('Deleting:', name);
+            // 实现删除逻辑
+        }
     </script>
 </body>
-</html> 
+
+</html>
