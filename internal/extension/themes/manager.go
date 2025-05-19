@@ -2,8 +2,6 @@ package themes
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -266,25 +264,18 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 
 			// Now, verify checksum
 			// Read the entire file into a byte slice first
-			fileData, readErr := os.ReadFile(currentSavePath)
-			if readErr != nil {
-				tm.logger.Logf(indentPrefix+"[%d/%d] Error reading downloaded file '%s' for checksum: %v", *downloadedFiles, totalFiles, itemRelativePath, readErr)
+			calculatedSum, checksumErr := utils.CalculateFileSHA256(currentSavePath)
+			if checksumErr != nil {
+				tm.logger.Logf(indentPrefix+"[%d/%d] Error calculating checksum for downloaded file '%s': %v", *downloadedFiles, totalFiles, itemRelativePath, checksumErr)
 				os.Remove(currentSavePath) // Clean up
-				return fmt.Errorf("failed to read downloaded file '%s' for checksum: %w", currentSavePath, readErr)
+				return fmt.Errorf("failed to calculate checksum for downloaded file '%s': %w", currentSavePath, checksumErr)
 			}
-			
-			hasher := sha256.New()
-			if _, err := hasher.Write(fileData); err != nil { // Write the entire byte slice to the hasher
-				tm.logger.Logf(indentPrefix+"[%d/%d] Error writing file data to hasher for '%s': %v", *downloadedFiles, totalFiles, itemRelativePath, err)
-				os.Remove(currentSavePath) // Clean up
-				return fmt.Errorf("failed to write file data to hasher for '%s': %w", currentSavePath, err)
-			}
-			calculatedSum := hex.EncodeToString(hasher.Sum(nil))
 
 			if !strings.EqualFold(calculatedSum, asset.Sum) {
 				tm.logger.Logf(indentPrefix+"[%d/%d] Checksum mismatch for '%s'. Expected: %s, Got: %s", *downloadedFiles, totalFiles, itemRelativePath, asset.Sum, calculatedSum)
-				os.Remove(currentSavePath) // Clean up
-				return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, asset.Sum, calculatedSum)
+				// os.Remove(currentSavePath) // Clean up - File preserved for inspection
+				tm.logger.Logf(indentPrefix+"[%d/%d] File preserved for inspection due to checksum mismatch: %s", *downloadedFiles, totalFiles, currentSavePath)
+				return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s. File preserved at %s", name, asset.Sum, calculatedSum, currentSavePath)
 			}
 			tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s'.", *downloadedFiles, totalFiles, itemRelativePath)
 
@@ -352,25 +343,18 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 
 					// Now, verify checksum for the map item (AssetDetail-like map)
 					// Read the entire file into a byte slice first
-					fileDataToVerify, readErrVerify := os.ReadFile(currentSavePath)
-					if readErrVerify != nil {
-						tm.logger.Logf(indentPrefix+"[%d/%d] Error reading downloaded file '%s' (from map) for checksum: %v", *downloadedFiles, totalFiles, itemRelativePath, readErrVerify)
+					calculatedSum, checksumErr := utils.CalculateFileSHA256(currentSavePath)
+					if checksumErr != nil {
+						tm.logger.Logf(indentPrefix+"[%d/%d] Error calculating checksum for downloaded file '%s' (from map): %v", *downloadedFiles, totalFiles, itemRelativePath, checksumErr)
 						os.Remove(currentSavePath) // Clean up
-						return fmt.Errorf("failed to read downloaded file '%s' (from map) for checksum: %w", currentSavePath, readErrVerify)
+						return fmt.Errorf("failed to calculate checksum for downloaded file '%s' (from map): %w", currentSavePath, checksumErr)
 					}
-
-					hasher := sha256.New()
-					if _, err := hasher.Write(fileDataToVerify); err != nil { // Write the entire byte slice to the hasher
-						tm.logger.Logf(indentPrefix+"[%d/%d] Error writing file data to hasher for '%s' (from map): %v", *downloadedFiles, totalFiles, itemRelativePath, err)
-						os.Remove(currentSavePath) // Clean up
-						return fmt.Errorf("failed to write file data to hasher for '%s' (from map): %w", currentSavePath, err)
-					}
-					calculatedSum := hex.EncodeToString(hasher.Sum(nil))
 
 					if !strings.EqualFold(calculatedSum, sumString) {
 						tm.logger.Logf(indentPrefix+"[%d/%d] Checksum mismatch for '%s'. Expected: %s, Got: %s", *downloadedFiles, totalFiles, itemRelativePath, sumString, calculatedSum)
-						os.Remove(currentSavePath) // Clean up
-						return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, sumString, calculatedSum)
+						// os.Remove(currentSavePath) // Clean up - File preserved for inspection
+						tm.logger.Logf(indentPrefix+"[%d/%d] File preserved for inspection due to checksum mismatch: %s", *downloadedFiles, totalFiles, currentSavePath)
+						return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s. File preserved at %s", name, sumString, calculatedSum, currentSavePath)
 					}
 					tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s' (from map).", *downloadedFiles, totalFiles, itemRelativePath)
 
@@ -1059,17 +1043,10 @@ func (tm *ThemeManager) _scanDirectoryStructure(currentPath string, rootDirForRe
 			fileURL := baseAssetURL.ResolveReference(&url.URL{Path: relativePath})
 
 			// Calculate SHA256 sum for the file
-			fileData, err := os.Open(fullEntryPath)
-			if err != nil {
-				return nil, fmt.Errorf("failed to open file '%s' for hashing: %w", fullEntryPath, err)
+			hexSum, checksumErr := utils.CalculateFileSHA256(fullEntryPath)
+			if checksumErr != nil {
+				return nil, fmt.Errorf("failed to calculate checksum for file '%s': %w", fullEntryPath, checksumErr)
 			}
-			defer fileData.Close()
-
-			hasher := sha256.New()
-			if _, err := io.Copy(hasher, fileData); err != nil {
-				return nil, fmt.Errorf("failed to hash file '%s': %w", fullEntryPath, err)
-			}
-			hexSum := hex.EncodeToString(hasher.Sum(nil))
 
 			assetDetail := AssetDetail{ // Assuming AssetDetail is defined in the same package or imported
 				URL: fileURL.String(),
