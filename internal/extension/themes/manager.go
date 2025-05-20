@@ -192,8 +192,23 @@ func countFilesInStructure(structure map[string]interface{}) int {
 		switch v := item.(type) {
 		case AssetDetail: // It's a file, represented by AssetDetail
 			count++
-		case map[string]interface{}: // It's a subdirectory
-			count += countFilesInStructure(v)
+		case map[string]interface{}: // Could be a subdirectory or an AssetDetail-like map
+			// Check if it's an AssetDetail-like map
+			urlVal, urlOk := v["url"]
+			sumVal, sumOk := v["sum"]
+			if urlOk && sumOk {
+				_, urlIsString := urlVal.(string)
+				_, sumIsString := sumVal.(string)
+				if urlIsString && sumIsString {
+					count++ // It's an AssetDetail-like map, count as one file
+				} else {
+					// Has 'url' and 'sum' but wrong types, or not an asset; recurse if it's a directory
+					count += countFilesInStructure(v)
+				}
+			} else {
+				// Not an AssetDetail-like map, assume it's a subdirectory and recurse
+				count += countFilesInStructure(v)
+			}
 		// No default case needed here, as other types are not expected by _scanDirectoryStructure
 		}
 	}
@@ -222,7 +237,7 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 			}
 
 			*downloadedFiles++
-			tm.logger.Logf(indentPrefix+"[%d/%d] Downloading '%s'...", *downloadedFiles, totalFiles, itemRelativePath)
+			// tm.logger.Logf(indentPrefix+"[%d/%d] Downloading '%s'...", *downloadedFiles, totalFiles, itemRelativePath) // Removed this log
 			resp, err := httpClient.Get(resolvedFileURLString)
 			if err != nil {
 				tm.logger.Logf(indentPrefix+"[%d/%d] Downloading '%s'... Error: %v", *downloadedFiles, totalFiles, itemRelativePath, err)
@@ -278,7 +293,7 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 				os.Remove(currentSavePath) // Clean up
 				return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, asset.Sum, calculatedSum)
 			}
-			tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s'.", *downloadedFiles, totalFiles, itemRelativePath)
+			tm.logger.Logf(indentPrefix+"[%d/%d] Downloaded and verified '%s'.", *downloadedFiles, totalFiles, itemRelativePath)
 
 		case map[string]interface{}: // Value is a map, could be an AssetDetail-like map or a sub-directory
 			mapItem := v
@@ -305,7 +320,7 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 					}
 
 					*downloadedFiles++
-					tm.logger.Logf(indentPrefix+"[%d/%d] Downloading '%s' (from map)...", *downloadedFiles, totalFiles, itemRelativePath)
+					// tm.logger.Logf(indentPrefix+"[%d/%d] Downloading '%s' (from map)...", *downloadedFiles, totalFiles, itemRelativePath) // Removed this log
 					resp, err := httpClient.Get(resolvedFileURLString)
 					if err != nil {
 						tm.logger.Logf(indentPrefix+"[%d/%d] Downloading '%s'... Error: %v", *downloadedFiles, totalFiles, itemRelativePath, err)
@@ -356,7 +371,7 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 						os.Remove(currentSavePath) // Clean up
 						return fmt.Errorf("checksum mismatch for file '%s': expected %s, got %s", name, sumString, calculatedSum)
 					}
-					tm.logger.Logf(indentPrefix+"[%d/%d] Verified '%s' (from map).", *downloadedFiles, totalFiles, itemRelativePath)
+					tm.logger.Logf(indentPrefix+"[%d/%d] Downloaded and verified '%s'.", *downloadedFiles, totalFiles, itemRelativePath)
 
 				} else { // Has 'url' and 'sum' keys, but types are wrong. Treat as subdirectory.
 					if err := os.MkdirAll(currentSavePath, 0755); err != nil {
