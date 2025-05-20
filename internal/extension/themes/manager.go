@@ -271,6 +271,8 @@ func (tm *ThemeManager) downloadAndSaveStructure(baseSavePath string, currentRel
 				return fmt.Errorf("failed to calculate checksum for downloaded file '%s': %w", currentSavePath, checksumErr)
 			}
 
+// ADDED LOGGING:
+			tm.logger.Logf(indentPrefix+"[%d/%d] Checksum verification for '%s': Expected (from theme.yaml): '%s', Calculated (from downloaded file): '%s', Source URL: '%s'", *downloadedFiles, totalFiles, itemRelativePath, asset.Sum, calculatedSum, resolvedFileURLString)
 			if !strings.EqualFold(calculatedSum, asset.Sum) {
 				tm.logger.Logf(indentPrefix+"[%d/%d] Checksum mismatch for '%s'. Expected: %s, Got: %s", *downloadedFiles, totalFiles, itemRelativePath, asset.Sum, calculatedSum)
 				os.Remove(currentSavePath) // Clean up

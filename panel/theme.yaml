@@ -7,10 +7,10 @@ source_link: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main
 structure:
   docker.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/docker.html
-    sum: 7b9d9237c0242dd3c255fb252f1440447862aca65e30a1b1efc1308962189fad
+    sum: 25728301f52a158665a60bb6bc3b7b61cae859f83cb4006890605b802b2c84ec
   filemanager.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/filemanager.html
-    sum: ab7ac6b9f00b6b069e2b44d8737f76d8921e25721c568cfeec1e5aedff6507b3
+    sum: cd0a024bf01c294831d14b3a795d9b5faaa327c368bfebaeffe6ee8c4969642f
   index.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/index.html
     sum: f190621847b4d25e93fcf6d81bdfa8bacaabb8642ce7ee9678b2330c2b9ecfc5
@@ -23,16 +23,19 @@ structure:
       sum: a8515fd2a7ed9f2ed0015d6422ff94599e175e9e658569e1c2a00c1404eead0e
   login.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/login.html
-    sum: 995f589fc47dec4aa608dd97bb34b794e907d6ae335da071ecea28f46bc82109
+    sum: 68734a3f249f37a0f773da78f5b25f05f30798001e9b0a14f438fadcab41093b
   market.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/market.html
-    sum: f7786ca92a5305bf52c752b9375d7609f0c38cfd0f28332deb9bdd974ab31bc9
+    sum: ecbca44c1edb63f9a12bcfe5a7cf595d8198e38f53ed51971070e6bb589f35b6
   settings.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/settings.html
-    sum: 2b77e1a94a966fa5bbacbb6abb39f0f8deb77ebef2a8bdb7320c98cacf4a39f3
+    sum: a9de2bf9c26ed3468e3b236fac2afae99d5691e60c3876bc76db8a66eda6c67c
   style.css:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/style.css
     sum: 5e297a6d316fb472452b51b5d0d51cdbfcd96546688ed13391a3b64153e8330d
+  t.html:
+    url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/t.html
+    sum: 25728301f52a158665a60bb6bc3b7b61cae859f83cb4006890605b802b2c84ec
   website.html:
     url: https://raw.githubusercontent.com/OG-Open-Source/PanelBase_dev/main/panel/website.html
     sum: 1c9e48206fe8e5567c74f59a2161e6c20cdbb108c9aa7b3aaf64d0a6b355bb17

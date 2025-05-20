@@ -65,10 +65,10 @@ func TestCalculateFileSHA256(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name:        "content with CRLF line endings",
+			name:        "content with CRLF line endings (should normalize to LF)",
 			fileContent: "line1\r\nline2\r\nline3",
-			// sha256("line1\r\nline2\r\nline3")
-			expectedSum:   "8e6e1813a91673a97a507514725b09977399498094210059632869083090480a",
+			// After normalization, this should be the same as sha256("line1\nline2\nline3")
+			expectedSum:   "d12c8919980028542af033396a0a28709507680789658623359003055bd8150c",
 			expectedError: false,
 		},
 	}
@@ -110,12 +110,13 @@ func TestCalculateFileSHA256(t *testing.T) {
 		})
 	}
 
-	// Additional test to ensure CRLF and LF produce different hashes for visually same content
-	t.Run("CRLF vs LF different hashes", func(t *testing.T) {
+	// Additional test to ensure CRLF and LF produce THE SAME hash after normalization
+	t.Run("CRLF vs LF same hash after normalization", func(t *testing.T) {
 		contentBase := "line one\nline two"
-		
-		filePathLF := createTempFile(t, strings.ReplaceAll(contentBase, "\n", "\n"), "_lf_specific.txt") // Ensure LF
-		filePathCRLF := createTempFile(t, strings.ReplaceAll(contentBase, "\n", "\r\n"), "_crlf_specific.txt") // Ensure CRLF
+
+		// Create one file with LF and another with CRLF
+		filePathLF := createTempFile(t, strings.ReplaceAll(contentBase, "\n", "\n"), "_lf_specific.txt")
+		filePathCRLF := createTempFile(t, strings.ReplaceAll(contentBase, "\n", "\r\n"), "_crlf_specific.txt")
 
 		sumLF, errLF := CalculateFileSHA256(filePathLF)
 		if errLF != nil {
@@ -124,16 +125,17 @@ func TestCalculateFileSHA256(t *testing.T) {
 
 		sumCRLF, errCRLF := CalculateFileSHA256(filePathCRLF)
 		if errCRLF != nil {
-			t.Fatalf("Error calculating CRLF sum: %v", errCRLF)
+			t.Fatalf("Error calculating CRLF sum (after normalization): %v", errCRLF)
 		}
 
-		if sumLF == sumCRLF {
-			t.Errorf("Expected different SHA256 sums for LF and CRLF content, but got the same: %s", sumLF)
+		if sumLF != sumCRLF {
+			t.Errorf("Expected SHA256 sums for LF and CRLF content to be THE SAME after normalization, but got different sums. LF: %s, CRLF (normalized): %s", sumLF, sumCRLF)
 			
+			// Log original file contents for debugging if sums differ
 			contentLFBytes, _ := os.ReadFile(filePathLF)
-			t.Logf("LF File content (hex): [%x]", contentLFBytes)
+			t.Logf("Original LF File content (hex): [%x]", contentLFBytes)
 			contentCRLFBytes, _ := os.ReadFile(filePathCRLF)
-			t.Logf("CRLF File content (hex): [%x]", contentCRLFBytes)
+			t.Logf("Original CRLF File content (hex): [%x]", contentCRLFBytes)
 		}
 	})
 
